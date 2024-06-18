@@ -22,7 +22,7 @@ const uri: string = process.env.MONGODB_URI || "mongodb://localhost:27017";
   }
 })();
 
-app.get("/health", (_req: Request, res: Response) => {
+app.get("/", (_req: Request, res: Response) => {
   res.status(200).send("Server is running");
 });
 
