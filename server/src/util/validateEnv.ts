@@ -1,5 +1,4 @@
-import { cleanEnv } from "envalid";
-import { port, str } from "envalid/dist/validators";
+import { cleanEnv, str, port } from "envalid";
 
 export default cleanEnv(process.env, {
   MONGODB_URI: str(),
