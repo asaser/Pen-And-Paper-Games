@@ -3,6 +3,7 @@ import express, { Express, NextFunction, Request, Response } from "express";
 import cors from "cors";
 import morgan from "morgan";
 import notesRoutes from "./routes/notes";
+import createHttpError, { isHttpError } from "http-errors";
 
 const app: Express = express();
 
@@ -15,15 +16,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/notes", notesRoutes);
 
 app.use((req, res, next) => {
-  next(Error("Endpoint not found"));
+  next(createHttpError(404, "Endpoint not found"));
 });
 
 app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
   console.log(error);
   let errorMessage = "Unknow error occured";
+  let statusCode = 500;
 
-  if (error instanceof Error) errorMessage = error.message;
-  res.status(500).json({ error: errorMessage });
+  if (isHttpError(error)) {
+    statusCode = error.status;
+    errorMessage = error.message;
+  }
+  res.status(statusCode).json({ error: errorMessage });
 });
 
 export default app;
