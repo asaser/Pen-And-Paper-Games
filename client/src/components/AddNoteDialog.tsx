@@ -1,8 +1,31 @@
 import { Button, Dialog, DialogContent, DialogTitle, Grid, TextField } from "@mui/material";
 import { useState } from "react";
+import { Note } from "../models/note";
+import { useForm } from "react-hook-form";
+import { NoteInput } from "../network/notes_api";
 
-const AddNoteDialog = () => {
+interface AddNoteDialogProps {
+    onNoteSaved: (note: Note) => void,
+}
+
+const AddNoteDialog = ({onNoteSaved}: AddNoteDialogProps) => {
     const [open, setOpen] = useState(false);
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting}
+    } = useForm<NoteInput[]>()
+
+
+    async function onSubmit(input: NoteInput) {
+        try {
+            
+        } catch (error) {
+            console.error(error) 
+        }
+    }
+
     const handleClickOpen = () => {
       setOpen(true);
     };
@@ -27,23 +50,27 @@ const AddNoteDialog = () => {
                 </DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2} direction="column">
-                        <Grid item>
+                        <form>
                             <TextField
-                            required
-                            id="outlined-required"
-                            label="Title"
-                            placeholder="Title"
-                            fullWidth
+                                label="Title"
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
                             />
-                        </Grid>
-                        <Grid item>
                             <TextField
-                            id="outlined-required"
-                            label="Text"
-                            placeholder="Text"
-                            fullWidth
+                                label="Text"
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
                             />
-                        </Grid>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                            >
+                                Save
+                            </Button>
+                        </form>
                     </Grid>
                 </DialogContent>
             </Dialog>
