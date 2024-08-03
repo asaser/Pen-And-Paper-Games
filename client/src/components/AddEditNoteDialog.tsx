@@ -8,23 +8,35 @@ import * as NoteApi from "../network/notes_api";
 import styleUtils from "../styles/utils.module.css";
 
 
-interface AddNoteDialogProps {
+interface AddEditNoteDialogProps {
+    noteToEdit?: Note,
     onNoteSaved: (note: Note) => void,
 }
 
-const AddNoteDialog = ({onNoteSaved}: AddNoteDialogProps) => {
+const AddEditNoteDialog = ({noteToEdit, onNoteSaved}: AddEditNoteDialogProps) => {
     const [open, setOpen] = useState(false);
 
     const {
         register,
         handleSubmit,
         formState: { errors, isSubmitting}
-    } = useForm<NoteInput>()
+    } = useForm<NoteInput>({
+        defaultValues: {
+            title: noteToEdit?.title || "",
+            text: noteToEdit?.text || "",
+        }
+    })
 
 
     async function onSubmit(input: NoteInput) {
         try {
-            const noteResponse = await NoteApi.createNote(input);
+            let noteResponse: Note;
+            if (noteToEdit) {
+                noteResponse = await NoteApi.updateNote(noteToEdit._id, input);
+            } else {
+                noteResponse = await NoteApi.createNote(input);
+            }
+
             onNoteSaved(noteResponse);
         } catch (error) {
             console.error(error);
@@ -56,7 +68,7 @@ const AddNoteDialog = ({onNoteSaved}: AddNoteDialogProps) => {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                    {"Add Note"}
+                    {noteToEdit ? "Edit note" : "Add note"}
                 </DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2} direction="column">
@@ -92,8 +104,8 @@ const AddNoteDialog = ({onNoteSaved}: AddNoteDialogProps) => {
                     </Grid>
                 </DialogContent>
             </Dialog>
-      </>
+    </>
     );
 }
 
-export default AddNoteDialog;
+export default AddEditNoteDialog;

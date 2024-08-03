@@ -8,10 +8,11 @@ import styleUtils from "../styles/utils.module.css";
 
 interface NoteProps {
     note: NoteModel,
+    onNoteClick: (note: NoteModel) => void,
     onDeleteNoteClick: (note: NoteModel) => void,
 }
 
-const Note = ({ note, onDeleteNoteClick }: NoteProps) => {
+const Note = ({ note, onNoteClick, onDeleteNoteClick }: NoteProps) => {
     const {
         title,
         text,
@@ -27,7 +28,7 @@ const Note = ({ note, onDeleteNoteClick }: NoteProps) => {
     }
 
     return (
-        <Card variant="outlined">
+        <Card variant="outlined" onClick={() => onNoteClick(note)}>
             <CardContent className={`${styles.noteCard}`}>
                 <Typography className={`${styles.cardTypography} ${styleUtils.flexCenter}`}>
                 {title}

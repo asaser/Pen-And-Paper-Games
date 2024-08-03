@@ -2,12 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Note as NoteModel } from './models/note';
 import Note from './components/Note';
 import * as NotesApi from "./network/notes_api";
-import AddNoteDialog from './components/AddNoteDialog';
+import AddEditNoteDialog from './components/AddEditNoteDialog';
 
 function App() {
   const [notes, setNotes] = useState<NoteModel[]>([]);
-
-  // const [show, setShow] = useState(true)
+  const [noteToEdit, setNoteToEdit] = useState<NoteModel | null>(null);
 
   useEffect(() => {
     async function loadNotes() {
@@ -35,13 +34,23 @@ function App() {
   return (
     <div>
       {notes.map(note => (
-        <Note note={note} key={note._id} onDeleteNoteClick={deleteNote}  />
+        <Note 
+          note={note} 
+          onNoteClick={setNoteToEdit}
+          key={note._id} 
+          onDeleteNoteClick={deleteNote}  
+        />
       ))}
-      {/* { show && */}
-        <AddNoteDialog onNoteSaved={(newNote) => {
-          setNotes([...notes, newNote])
-        }} />
-      {/* } */}
+        <AddEditNoteDialog 
+          onNoteSaved={(newNote) => {
+            setNotes([...notes, newNote])
+          }} 
+        />
+
+        {noteToEdit && <AddEditNoteDialog noteToEdit={noteToEdit} onNoteSaved={(updatedNote) => {
+          setNotes(notes.map(existingNote => existingNote._id === updatedNote._id ? updatedNote : existingNote))
+          setNoteToEdit(null);
+        }} />}
     </div>
   );
 }
