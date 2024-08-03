@@ -3,19 +3,26 @@ import { Note as NoteModel } from './models/note';
 import Note from './components/Note';
 import * as NotesApi from "./network/notes_api";
 import AddEditNoteDialog from './components/AddEditNoteDialog';
+import { CircularProgress } from '@mui/material';
 
 function App() {
   const [notes, setNotes] = useState<NoteModel[]>([]);
+  const [notesLoading, setNotesLoading] = useState(true)
+  const [showNotesLoadingError, setShowNotesLoadingError] = useState(false)
   const [noteToEdit, setNoteToEdit] = useState<NoteModel | null>(null);
 
   useEffect(() => {
     async function loadNotes() {
       try {
+        setShowNotesLoadingError(false);
+        setNotesLoading(true);
         const notes = await NotesApi.fetchNotes();
         setNotes(notes);
       } catch (error) {
         console.error(error);
-        alert(error);
+        setShowNotesLoadingError(true);
+      } finally {
+        setNotesLoading(false);
       }
     }
     loadNotes()
@@ -31,7 +38,7 @@ function App() {
     }
   }
 
-  return (
+  const notesGrid = 
     <div>
       {notes.map(note => (
         <Note 
@@ -41,11 +48,27 @@ function App() {
           onDeleteNoteClick={deleteNote}  
         />
       ))}
+    </div>
+
+return (
+    <div>
         <AddEditNoteDialog 
           onNoteSaved={(newNote) => {
             setNotes([...notes, newNote])
           }} 
         />
+
+        {notesLoading && <CircularProgress />}
+        {showNotesLoadingError && <p>Something went wrong</p>}
+        {!notesLoading && !showNotesLoadingError && 
+        <>
+          {notes.length > 0
+            ? notesGrid 
+            :
+            <p>You do not have any notes</p>
+          }
+        </>
+        }
 
         {noteToEdit && <AddEditNoteDialog noteToEdit={noteToEdit} onNoteSaved={(updatedNote) => {
           setNotes(notes.map(existingNote => existingNote._id === updatedNote._id ? updatedNote : existingNote))
