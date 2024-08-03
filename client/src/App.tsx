@@ -22,10 +22,20 @@ function App() {
     loadNotes()
   }, []);
 
+  async function deleteNote(note: NoteModel) {
+    try {
+      await NotesApi.deleteNote(note._id);
+      setNotes(notes.filter(existingNote => existingNote._id !== note._id))
+    } catch (error) {
+      console.error(error);
+      alert(error)
+    }
+  }
+
   return (
     <div>
       {notes.map(note => (
-        <Note note={note} key={note._id} />
+        <Note note={note} key={note._id} onDeleteNoteClick={deleteNote}  />
       ))}
       {/* { show && */}
         <AddNoteDialog onNoteSaved={(newNote) => {

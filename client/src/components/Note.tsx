@@ -3,11 +3,15 @@ import { Card, CardContent, Typography } from "@mui/material";
 import { Note as NoteModel } from "../models/note";
 import { formatDate } from "../utils/formatDate";
 
+import DeleteIcon from '@mui/icons-material/Delete';
+import styleUtils from "../styles/utils.module.css";
+
 interface NoteProps {
     note: NoteModel,
+    onDeleteNoteClick: (note: NoteModel) => void,
 }
 
-const Note = ({ note }: NoteProps) => {
+const Note = ({ note, onDeleteNoteClick }: NoteProps) => {
     const {
         title,
         text,
@@ -25,8 +29,14 @@ const Note = ({ note }: NoteProps) => {
     return (
         <Card variant="outlined">
             <CardContent className={`${styles.noteCard}`}>
-                <Typography className={styles.cardTypography}>
-                    {title}
+                <Typography className={`${styles.cardTypography} ${styleUtils.flexCenter}`}>
+                {title}
+                    <DeleteIcon 
+                        onClick = {(e) => {
+                            onDeleteNoteClick(note);
+                            e.stopPropagation();
+                        }}
+                    />
                 </Typography>
                 <Typography className={styles.cardTypography}>
                     {text}
