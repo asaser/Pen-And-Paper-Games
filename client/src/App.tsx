@@ -28,7 +28,9 @@ function App() {
         <Note note={note} key={note._id} />
       ))}
       {/* { show && */}
-        <AddNoteDialog />
+        <AddNoteDialog onNoteSaved={(newNote) => {
+          setNotes([...notes, newNote])
+        }} />
       {/* } */}
     </div>
   );
