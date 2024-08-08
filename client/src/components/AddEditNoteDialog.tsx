@@ -59,7 +59,7 @@ const AddEditNoteDialog = ({noteToEdit, onNoteSaved}: AddEditNoteDialogProps) =>
                 onClick={handleClickOpen} 
                 className={`${styleUtils.blockCenter}`}
             >
-                Open alert dialog
+                Add Note
             </Button>
             <Dialog
                 open={open}
