@@ -3,6 +3,7 @@
     "target": "es2016",
     "jsx": "preserve",
     "module": "commonjs",
+    "typeRoots": ["node_modules/@types", "@types"],
     "allowJs": true,
     "outDir": "./dist",
     "esModuleInterop": true,
@@ -10,5 +11,6 @@
     "strict": true,
     "skipLibCheck": true
   },
+  "ts-node": { "files": true },
   "exclude": ["node_modules", "dist", "client"]
 }

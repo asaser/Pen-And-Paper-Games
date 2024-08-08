@@ -48,7 +48,49 @@ export const signUp: RequestHandler<
       password: passwordHashed,
     });
 
+    req.session.userId = newUser._id;
+
     res.status(201).json(newUser);
+  } catch (error) {
+    next(error);
+  }
+};
+
+interface LoginBody {
+  username?: string;
+  password?: string;
+}
+
+export const login: RequestHandler<
+  unknown,
+  unknown,
+  LoginBody,
+  unknown
+> = async (req, res, next) => {
+  const username = req.body.username;
+  const password = req.body.password;
+
+  try {
+    if (!username || !password) {
+      throw createHttpError(400, "Parameters missing");
+    }
+
+    const user = await UserModel.findOne({ username: username })
+      .select("+password +email")
+      .exec();
+
+    if (!user) {
+      throw createHttpError(401, "Invalid credentials");
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    if (!passwordMatch) {
+      throw createHttpError(401, "Invalid credentials");
+    }
+
+    req.session.userId = user._id;
+    res.status(201).json(user);
   } catch (error) {
     next(error);
   }
