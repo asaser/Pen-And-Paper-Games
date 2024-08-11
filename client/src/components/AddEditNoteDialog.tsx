@@ -6,6 +6,7 @@ import { NoteInput } from "../network/notes_api";
 import * as NoteApi from "../network/notes_api";
 
 import styleUtils from "../styles/utils.module.css";
+import TextInputField from "./form/TextInputField";
 
 
 interface AddEditNoteDialogProps {
@@ -73,33 +74,39 @@ const AddEditNoteDialog = ({noteToEdit, onNoteSaved}: AddEditNoteDialogProps) =>
                 <DialogContent>
                     <Grid container spacing={2} direction="column">
                         <form onSubmit={handleSubmit(onSubmit)}>
-                            <TextField
+
+
+                            <TextInputField 
+                                name="title"
                                 label="Title"
                                 variant="outlined"
                                 fullWidth
                                 margin="normal"
-                                error={!!errors.title}
-                                {...register("title", { required: "Required" })}
-                            />
-                            <p>
-                                {errors.title?.message}
-                            </p>
-                            <TextField
+                                register={register}
+                                registerOptions={{ required: "Required" }}
+                                error={errors.title}
+                            /> 
+
+                            <TextInputField
+                                name="text"
                                 label="Text"
                                 variant="outlined"
                                 fullWidth
                                 margin="normal"
-                                {...register("text")}
+                                register={register}
                             />
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                type="submit"
-                                onClick={handleClose}
-                                disabled={isSubmitting}
-                            >
-                                Save
-                            </Button>
+
+                            <div>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    type="submit"
+                                    onClick={handleClose}
+                                    disabled={isSubmitting}
+                                >
+                                    Save
+                                </Button>
+                            </div>
                         </form>
                     </Grid>
                 </DialogContent>
