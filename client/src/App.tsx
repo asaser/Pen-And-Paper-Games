@@ -4,6 +4,7 @@ import Note from './components/Note';
 import * as NotesApi from "./network/notes_api";
 import AddEditNoteDialog from './components/AddEditNoteDialog';
 import { CircularProgress } from '@mui/material';
+import SignUpModal from './components/SignUpModal';
 
 function App() {
   const [notes, setNotes] = useState<NoteModel[]>([]);
@@ -74,6 +75,14 @@ return (
           setNotes(notes.map(existingNote => existingNote._id === updatedNote._id ? updatedNote : existingNote))
           setNoteToEdit(null);
         }} />}
+
+        {
+          true &&
+          <SignUpModal 
+            onDismiss={() => {}}
+            onSignUpSuccesful={() => {}}
+          />
+        }
     </div>
   );
 }
