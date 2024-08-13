@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogContent, DialogTitle, Grid, TextField } from "@mui/material";
+import { Button, Dialog, DialogContent, DialogTitle, Grid } from "@mui/material";
 import { useState } from "react";
 import { Note } from "../models/note";
 import { useForm } from "react-hook-form";
@@ -74,8 +74,6 @@ const AddEditNoteDialog = ({noteToEdit, onNoteSaved}: AddEditNoteDialogProps) =>
                 <DialogContent>
                     <Grid container spacing={2} direction="column">
                         <form onSubmit={handleSubmit(onSubmit)}>
-
-
                             <TextInputField 
                                 name="title"
                                 label="Title"

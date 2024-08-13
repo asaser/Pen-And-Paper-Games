@@ -1,88 +1,64 @@
-import React, { useEffect, useState } from 'react';
-import { Note as NoteModel } from './models/note';
-import Note from './components/Note';
+import { useEffect, useState } from "react";
+import LoginModal from "./components/LoginModal";
+import NavBar from "./components/NavBar";
+import NotesPageLoggedInView from "./components/NotesPageLoggedInView";
+import SignUpModal from "./components/SignUpModal";
+import { User } from "./models/user";
 import * as NotesApi from "./network/notes_api";
-import AddEditNoteDialog from './components/AddEditNoteDialog';
-import { CircularProgress } from '@mui/material';
-import SignUpModal from './components/SignUpModal';
+import NotesPageLoggedOutView from "./components/NotesPageLoggedOutView";
 
 function App() {
-  const [notes, setNotes] = useState<NoteModel[]>([]);
-  const [notesLoading, setNotesLoading] = useState(true)
-  const [showNotesLoadingError, setShowNotesLoadingError] = useState(false)
-  const [noteToEdit, setNoteToEdit] = useState<NoteModel | null>(null);
+  const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
+  const [showSignUpModal, setShowSignUpModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
-    async function loadNotes() {
+    async function fetchLoggedInUser() {
       try {
-        setShowNotesLoadingError(false);
-        setNotesLoading(true);
-        const notes = await NotesApi.fetchNotes();
-        setNotes(notes);
+        const user = await NotesApi.getLoggedInUser();
+        setLoggedInUser(user);
       } catch (error) {
         console.error(error);
-        setShowNotesLoadingError(true);
-      } finally {
-        setNotesLoading(false);
       }
     }
-    loadNotes()
+    fetchLoggedInUser();
   }, []);
 
-  async function deleteNote(note: NoteModel) {
-    try {
-      await NotesApi.deleteNote(note._id);
-      setNotes(notes.filter(existingNote => existingNote._id !== note._id))
-    } catch (error) {
-      console.error(error);
-      alert(error)
-    }
-  }
-
-  const notesGrid = 
+  return (
     <div>
-      {notes.map(note => (
-        <Note 
-          note={note} 
-          onNoteClick={setNoteToEdit}
-          key={note._id} 
-          onDeleteNoteClick={deleteNote}  
-        />
-      ))}
-    </div>
-
-return (
-    <div>
-        <AddEditNoteDialog 
-          onNoteSaved={(newNote) => {
-            setNotes([...notes, newNote])
-          }} 
-        />
-
-        {notesLoading && <CircularProgress />}
-        {showNotesLoadingError && <p>Something went wrong</p>}
-        {!notesLoading && !showNotesLoadingError && 
+      <NavBar
+        loggedInUser={loggedInUser}
+        onLogInClicked={() => setShowLoginModal(true)}
+        onSignUpClicked={() => setShowSignUpModal(true)}
+        onLogoutSuccessful={() => setLoggedInUser(null)}
+      />
+      <div>
         <>
-          {notes.length > 0
-            ? notesGrid 
-            :
-            <p>You do not have any notes</p>
-          }
+          {loggedInUser ? (
+            <NotesPageLoggedInView />
+          ) : (
+            <NotesPageLoggedOutView />
+          )}
         </>
-        }
-
-        {noteToEdit && <AddEditNoteDialog noteToEdit={noteToEdit} onNoteSaved={(updatedNote) => {
-          setNotes(notes.map(existingNote => existingNote._id === updatedNote._id ? updatedNote : existingNote))
-          setNoteToEdit(null);
-        }} />}
-
-        {
-          true &&
-          <SignUpModal 
-            onDismiss={() => {}}
-            onSignUpSuccesful={() => {}}
+        {showSignUpModal && (
+          <SignUpModal
+            onDismiss={() => setShowSignUpModal(false)}
+            onSignUpSuccesful={(user) => {
+              setLoggedInUser(user);
+              setShowSignUpModal(false);
+            }}
           />
-        }
+        )}
+        {showLoginModal && (
+          <LoginModal
+            onDismiss={() => setShowLoginModal(false)}
+            onLoginSuccessful={(user) => {
+              setLoggedInUser(user);
+              setShowLoginModal(false);
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 }

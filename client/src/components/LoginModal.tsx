@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { User } from "../models/user";
-import { SignUpCredentials } from "../network/notes_api";
+import { LoginCredentials } from "../network/notes_api";
 import * as NotesApi from "../network/notes_api";
 import { Box, Button, Modal } from "@mui/material";
 import TextInputField from "./form/TextInputField";
@@ -19,23 +19,24 @@ const style = {
     p: 4,
   };
 
-interface SignUpModalProps {
+interface LoginModalProps {
     onDismiss: () => void,
-    onSignUpSuccesful: (user: User) => void,
+    onLoginSuccessful: (user: User) => void,
 }
 
-const SignUpModal = ({ onDismiss, onSignUpSuccesful}: SignUpModalProps) => {
-    const { register, handleSubmit, formState: {errors, isSubmitting }} = useForm<SignUpCredentials>();
-    
-    async function onSubmit(credentials: SignUpCredentials) {
+const LoginModal = ({ onDismiss, onLoginSuccessful}: LoginModalProps) => {
+    const {register, handleSubmit, formState: { errors, isSubmitting }} = useForm<LoginCredentials>();
+
+    async function onSubmit(credentials: LoginCredentials) {
         try {
-            const newUser = await NotesApi.signUp(credentials);
-            onSignUpSuccesful(newUser);
+            const user = await NotesApi.login(credentials);
+            onLoginSuccessful(user)
         } catch (error) {
             alert(error);
-            console.log(error);
+            console.error(error);
         }
     }
+
     return (
         <Modal
             open
@@ -55,15 +56,6 @@ const SignUpModal = ({ onDismiss, onSignUpSuccesful}: SignUpModalProps) => {
                         error={errors.username}
                     /> 
                     <TextInputField 
-                        name="email"
-                        label="Email"
-                        type="email"
-                        placeholder="Email"
-                        register={register}
-                        registerOptions={{ required: "Required" }}
-                        error={errors.email}
-                    /> 
-                    <TextInputField 
                         name="password"
                         label="Password"
                         type="password"
@@ -77,12 +69,12 @@ const SignUpModal = ({ onDismiss, onSignUpSuccesful}: SignUpModalProps) => {
                         disabled={isSubmitting}
                         className={styleUtils.width100}
                     >
-                        Sign Up
+                        Log In
                     </Button>
                 </form>
             </Box>
         </Modal>
     );
 }
-
-export default SignUpModal;
+ 
+export default LoginModal;
