@@ -5,22 +5,22 @@ import bcrypt from "bcrypt";
 import { createSecretToken } from "../util/secretToken";
 
 // TODO - check if it is necessary
-export const getAuthenticatedUser: RequestHandler = async (req, res, next) => {
-  const email = req.body.email;
-  try {
-    const user = await UserModel.findOne({ email: email })
-      .select("+email")
-      .exec();
+// export const getAuthenticatedUser: RequestHandler = async (req, res, next) => {
+//   const email = req.body.email;
+//   try {
+//     const user = await UserModel.findOne({ email: email })
+//       .select("+email")
+//       .exec();
 
-    res.status(200);
-    // const user = await UserModel.findById(req.session.userId)
-    //   .select("+email")
-    //   .exec();
-    // res.status(200).json(user);
-  } catch (error) {
-    next(error);
-  }
-};
+//     res.status(200);
+//     // const user = await UserModel.findById(req.session.userId)
+//     //   .select("+email")
+//     //   .exec();
+//     // res.status(200).json(user);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 interface SighUpBody {
   username?: string;
@@ -67,13 +67,15 @@ export const signUp: RequestHandler<
     // TODO - check if .toString() is safe
     const token = createSecretToken(newUser._id.toString());
     res.cookie("token", token, {
-      withCredentials: true,
       httpOnly: false,
+      secure: true,
+      sameSite: "none",
     });
-
     // req.session.userId = newUser._id;
 
-    res.status(201).json(newUser);
+    res
+      .status(201)
+      .json({ message: "User signed in successfully", success: true, newUser });
   } catch (error) {
     next(error);
   }
@@ -95,7 +97,7 @@ export const login: RequestHandler<
 
   try {
     if (!username || !password) {
-      throw createHttpError(400, "Parameters missing");
+      throw createHttpError(400, "Parameters missing for username or password");
     }
 
     const user = await UserModel.findOne({ username: username })
@@ -103,13 +105,13 @@ export const login: RequestHandler<
       .exec();
 
     if (!user) {
-      throw createHttpError(401, "Invalid credentials");
+      throw createHttpError(401, "Incorrect username");
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
-      throw createHttpError(401, "Invalid credentials");
+      throw createHttpError(401, "Incorrect password or email");
     }
 
     // req.session.userId = user._id;
