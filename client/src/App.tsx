@@ -33,7 +33,10 @@ function App() {
           loggedInUser={loggedInUser}
           onLogInClicked={() => setShowLoginModal(true)}
           onSignUpClicked={() => setShowSignUpModal(true)}
-          onLogoutSuccessful={() => setLoggedInUser(null)}
+          onLogoutSuccessful={() => {
+            setLoggedInUser(null);
+            localStorage.removeItem("token"); // Usuń token JWT z localStorage
+          }}
         />
         <div>
           <Routes>
@@ -51,6 +54,7 @@ function App() {
             onSignUpSuccesful={(user) => {
               setLoggedInUser(user);
               setShowSignUpModal(false);
+              localStorage.setItem("token", user.token); // Zapisz token JWT w localStorage
             }}
           />
         )}
@@ -60,6 +64,7 @@ function App() {
             onLoginSuccessful={(user) => {
               setLoggedInUser(user);
               setShowLoginModal(false);
+              localStorage.setItem("token", user.token); // Zapisz token JWT w localStorage
             }}
           />
         )}

@@ -3,7 +3,19 @@ import { Note } from "../models/note";
 import { User } from "../models/user";
 
 async function fetchData(input: RequestInfo, init?: RequestInit) {
-  const response = await fetch(input, init);
+  const token = localStorage.getItem("token"); // Pobierz token JWT z localStorage
+
+  // Dodaj nagłówek Authorization jeśli token istnieje
+  const headers = {
+    ...init?.headers,
+    Authorization: token ? `Bearer ${token}` : "",
+  };
+
+  const response = await fetch(input, {
+    ...init,
+    headers,
+  });
+
   if (response.ok) {
     return response;
   } else {
@@ -16,7 +28,7 @@ async function fetchData(input: RequestInfo, init?: RequestInit) {
       throw new ConflictError(errorMessage);
     } else {
       throw Error(
-        "Request failed: " + response.status + "message: " + errorMessage
+        "Request failed: " + response.status + " message: " + errorMessage
       );
     }
   }
@@ -90,11 +102,11 @@ export async function updateNote(
   noteId: string,
   note: NoteInput
 ): Promise<Note> {
-  const repsponse = await fetchData("api/notes/" + noteId, {
+  const response = await fetchData("api/notes/" + noteId, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(note),
   });
 
-  return repsponse.json();
+  return response.json();
 }

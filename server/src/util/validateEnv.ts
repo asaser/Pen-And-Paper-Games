@@ -3,6 +3,6 @@ import { cleanEnv, str, port } from "envalid";
 export default cleanEnv(process.env, {
   MONGODB_URI: str(),
   PORT: port(),
-  TOKEN_KEY: str(),
+  JWT_SECRET: str(),
   // SESSION_SECRET: str(),
 });

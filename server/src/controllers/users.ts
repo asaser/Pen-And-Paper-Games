@@ -2,38 +2,45 @@ import { RequestHandler } from "express";
 import createHttpError from "http-errors";
 import UserModel from "../models/user";
 import bcrypt from "bcrypt";
-import { createSecretToken } from "../util/secretToken";
+import jwt from "jsonwebtoken";
+import env from "../util/validateEnv";
 
-// TODO - check if it is necessary
-// export const getAuthenticatedUser: RequestHandler = async (req, res, next) => {
-//   const email = req.body.email;
-//   try {
-//     const user = await UserModel.findOne({ email: email })
-//       .select("+email")
-//       .exec();
+// Generowanie JWT
+const generateToken = (userId: string) => {
+  return jwt.sign({ userId }, env.JWT_SECRET, {
+    expiresIn: "1h", // Możesz dostosować czas ważności tokenu
+  });
+};
 
-//     res.status(200);
-//     // const user = await UserModel.findById(req.session.userId)
-//     //   .select("+email")
-//     //   .exec();
-//     // res.status(200).json(user);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+// Zwracanie zalogowanego użytkownika
+export const getAuthenticatedUser: RequestHandler = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      throw createHttpError(401, "Authorization header missing");
+    }
 
-interface SighUpBody {
-  username?: string;
-  email?: string;
-  password?: string;
-}
+    const token = authHeader.split(" ")[1];
+    const decodedToken = jwt.verify(token, env.JWT_SECRET) as {
+      userId: string;
+    };
 
-export const signUp: RequestHandler<
-  unknown,
-  unknown,
-  SighUpBody,
-  unknown
-> = async (req, res, next) => {
+    const user = await UserModel.findById(decodedToken.userId)
+      .select("+email")
+      .exec();
+
+    if (!user) {
+      throw createHttpError(404, "User not found");
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Rejestracja użytkownika
+export const signUp: RequestHandler = async (req, res, next) => {
   const username = req.body.username;
   const email = req.body.email;
   const passwordRaw = req.body.password;
@@ -43,90 +50,60 @@ export const signUp: RequestHandler<
       throw createHttpError(400, "Parameter missing");
     }
 
-    const existingUsername = await UserModel.findOne({
-      username: username,
-    }).exec();
+    const existingUsername = await UserModel.findOne({ username }).exec();
     if (existingUsername) {
       throw createHttpError(409, "Username already taken");
     }
 
-    const existingEmail = await UserModel.findOne({
-      email: email,
-    }).exec();
+    const existingEmail = await UserModel.findOne({ email }).exec();
     if (existingEmail) {
       throw createHttpError(409, "Email already taken");
     }
 
     const passwordHashed = await bcrypt.hash(passwordRaw, 10);
-
     const newUser = await UserModel.create({
-      username: username,
-      email: email,
+      username,
+      email,
       password: passwordHashed,
     });
-    // TODO - check if .toString() is safe
-    const token = createSecretToken(newUser._id.toString());
-    res.cookie("token", token, {
-      httpOnly: false,
-      secure: true,
-      sameSite: "none",
-    });
-    // req.session.userId = newUser._id;
 
-    res
-      .status(201)
-      .json({ message: "User signed in successfully", success: true, newUser });
+    const token = generateToken(newUser._id.toString());
+    res.status(201).json({ user: newUser, token });
   } catch (error) {
     next(error);
   }
 };
 
-interface LoginBody {
-  username?: string;
-  password?: string;
-}
-
-export const login: RequestHandler<
-  unknown,
-  unknown,
-  LoginBody,
-  unknown
-> = async (req, res, next) => {
+// Logowanie użytkownika
+export const login: RequestHandler = async (req, res, next) => {
   const username = req.body.username;
   const password = req.body.password;
 
   try {
     if (!username || !password) {
-      throw createHttpError(400, "Parameters missing for username or password");
+      throw createHttpError(400, "Parameters missing");
     }
 
-    const user = await UserModel.findOne({ username: username })
+    const user = await UserModel.findOne({ username })
       .select("+password +email")
       .exec();
-
     if (!user) {
-      throw createHttpError(401, "Incorrect username");
+      throw createHttpError(401, "Invalid credentials");
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
-
     if (!passwordMatch) {
-      throw createHttpError(401, "Incorrect password or email");
+      throw createHttpError(401, "Invalid credentials");
     }
 
-    // req.session.userId = user._id;
-    res.status(201).json(user);
+    const token = generateToken(user._id.toString());
+    res.status(201).json({ user, token });
   } catch (error) {
     next(error);
   }
 };
 
+// Wylogowanie użytkownika - nie jest wymagane przy JWT, bo nie ma sesji na serwerze
 export const logout: RequestHandler = (req, res, next) => {
-  // req.session.destroy((error) => {
-  //   if (error) {
-  //     next(error);
-  //   } else {
-  //     res.sendStatus(200);
-  //   }
-  // });
+  res.sendStatus(200); // Po prostu zwracamy 200, użytkownik może usunąć token po stronie klienta
 };
