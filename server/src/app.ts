@@ -5,33 +5,14 @@ import morgan from "morgan";
 import notesRoutes from "./routes/notes";
 import userRoutes from "./routes/users";
 import createHttpError, { isHttpError } from "http-errors";
-import session from "express-session";
-import env from "./util/validateEnv";
-import MongoStore from "connect-mongo";
 import { requiresAuth } from "./middleware/auth";
 
 const app: Express = express();
 
 app.use(morgan("dev"));
-
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-app.use(
-  session({
-    secret: env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      maxAge: 60 * 60 * 1000,
-    },
-    rolling: true,
-    store: MongoStore.create({
-      mongoUrl: env.MONGODB_URI,
-    }),
-  })
-);
 
 app.use("/api/users", userRoutes);
 app.use("/api/notes", requiresAuth, notesRoutes);
@@ -42,7 +23,7 @@ app.use((req, res, next) => {
 
 app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
   console.log(error);
-  let errorMessage = "Unknow error occured";
+  let errorMessage = "Unknown error occurred";
   let statusCode = 500;
 
   if (isHttpError(error)) {

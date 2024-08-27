@@ -17,8 +17,11 @@ function App() {
   useEffect(() => {
     async function fetchLoggedInUser() {
       try {
-        const user = await NotesApi.getLoggedInUser();
-        setLoggedInUser(user);
+        const token = localStorage.getItem("token");
+        if (token) {
+          const user = await NotesApi.getLoggedInUser(token);
+          setLoggedInUser(user);
+        }
       } catch (error) {
         console.error(error);
       }
@@ -33,7 +36,10 @@ function App() {
           loggedInUser={loggedInUser}
           onLogInClicked={() => setShowLoginModal(true)}
           onSignUpClicked={() => setShowSignUpModal(true)}
-          onLogoutSuccessful={() => setLoggedInUser(null)}
+          onLogoutSuccessful={() => {
+            setLoggedInUser(null);
+            localStorage.removeItem("token");
+          }}
         />
         <div>
           <Routes>
@@ -48,8 +54,9 @@ function App() {
         {showSignUpModal && (
           <SignUpModal
             onDismiss={() => setShowSignUpModal(false)}
-            onSignUpSuccesful={(user) => {
+            onSignUpSuccesful={(user, token) => {
               setLoggedInUser(user);
+              localStorage.setItem("token", token);
               setShowSignUpModal(false);
             }}
           />
@@ -57,8 +64,9 @@ function App() {
         {showLoginModal && (
           <LoginModal
             onDismiss={() => setShowLoginModal(false)}
-            onLoginSuccessful={(user) => {
+            onLoginSuccessful={(user, token) => {
               setLoggedInUser(user);
+              localStorage.setItem("token", token);
               setShowLoginModal(false);
             }}
           />

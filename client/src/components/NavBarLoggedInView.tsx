@@ -13,13 +13,18 @@ const NavBarLoggedInView = ({
 }: NavBarLoggedInViewProps) => {
   async function logout() {
     try {
-      await NotesApi.logout();
-      onLogoutSuccessful();
+      const token = localStorage.getItem("token");
+      if (token) {
+        await NotesApi.logout(token);
+        localStorage.removeItem("token");
+        onLogoutSuccessful();
+      }
     } catch (error) {
       console.log(error);
       alert(error);
     }
   }
+
   return (
     <>
       <p style={{ color: "#FFF" }}>Signed in as: {user.username}</p>

@@ -16,7 +16,9 @@ const NotesPageLoggedInView = () => {
       try {
         setShowNotesLoadingError(false);
         setNotesLoading(true);
-        const notes = await NotesApi.fetchNotes();
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("No token available");
+        const notes = await NotesApi.fetchNotes(token);
         setNotes(notes);
       } catch (error) {
         console.error(error);
@@ -30,7 +32,9 @@ const NotesPageLoggedInView = () => {
 
   async function deleteNote(note: NoteModel) {
     try {
-      await NotesApi.deleteNote(note._id);
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("No token available");
+      await NotesApi.deleteNote(note._id, token);
       setNotes(notes.filter((existingNote) => existingNote._id !== note._id));
     } catch (error) {
       console.error(error);

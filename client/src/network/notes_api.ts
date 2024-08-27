@@ -16,14 +16,20 @@ async function fetchData(input: RequestInfo, init?: RequestInit) {
       throw new ConflictError(errorMessage);
     } else {
       throw Error(
-        "Request failed: " + response.status + "message: " + errorMessage
+        "Request failed: " + response.status + " message: " + errorMessage
       );
     }
   }
 }
 
-export async function getLoggedInUser(): Promise<User> {
-  const response = await fetchData("/api/users", { method: "GET" });
+export async function getLoggedInUser(token: string): Promise<User> {
+  const response = await fetchData("/api/users", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
   return response.json();
 }
 
@@ -33,7 +39,9 @@ export interface SignUpCredentials {
   password: string;
 }
 
-export async function signUp(credentials: SignUpCredentials): Promise<User> {
+export async function signUp(
+  credentials: SignUpCredentials
+): Promise<{ user: User; token: string }> {
   const response = await fetchData("/api/users/signup", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -47,7 +55,9 @@ export interface LoginCredentials {
   password: string;
 }
 
-export async function login(credentials: LoginCredentials): Promise<User> {
+export async function login(
+  credentials: LoginCredentials
+): Promise<{ user: User; token: string }> {
   const response = await fetchData("/api/users/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -56,12 +66,24 @@ export async function login(credentials: LoginCredentials): Promise<User> {
   return response.json();
 }
 
-export async function logout() {
-  await fetchData("api/users/logout", { method: "POST" });
+export async function logout(token: string) {
+  await fetchData("/api/users/logout", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
 }
 
-export async function fetchNotes(): Promise<Note[]> {
-  const response = await fetchData("/api/notes/", { method: "GET" });
+export async function fetchNotes(token: string): Promise<Note[]> {
+  const response = await fetchData("/api/notes", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
   return response.json();
 }
 
@@ -70,31 +92,45 @@ export interface NoteInput {
   text?: string;
 }
 
-export async function createNote(note: NoteInput): Promise<Note> {
-  const response = await fetchData("api/notes", {
+export async function createNote(
+  note: NoteInput,
+  token: string
+): Promise<Note> {
+  const response = await fetchData("/api/notes", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(note),
   });
 
   return response.json();
 }
 
-export async function deleteNote(noteId: string) {
-  await fetchData("api/notes/" + noteId, {
+export async function deleteNote(noteId: string, token: string) {
+  await fetchData("/api/notes/" + noteId, {
     method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
   });
 }
 
 export async function updateNote(
   noteId: string,
-  note: NoteInput
+  note: NoteInput,
+  token: string
 ): Promise<Note> {
-  const repsponse = await fetchData("api/notes/" + noteId, {
+  const response = await fetchData("/api/notes/" + noteId, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(note),
   });
 
-  return repsponse.json();
+  return response.json();
 }
