@@ -11,6 +11,7 @@ async function fetchData(input: RequestInfo, init?: RequestInit) {
     Authorization: token ? `Bearer ${token}` : "",
   };
 
+  // Wykonanie żądania do API
   const response = await fetch(input, {
     ...init,
     headers,
@@ -19,8 +20,14 @@ async function fetchData(input: RequestInfo, init?: RequestInit) {
   if (response.ok) {
     return response;
   } else {
-    const errorBody = await response.json();
-    const errorMessage = errorBody.error;
+    let errorMessage = "Request failed";
+
+    try {
+      const errorBody = await response.json();
+      errorMessage = errorBody.error || errorMessage;
+    } catch (err) {
+      console.error("Failed to parse error response:", err);
+    }
 
     if (response.status === 401) {
       throw new UnauthorizedError(errorMessage);
@@ -28,7 +35,7 @@ async function fetchData(input: RequestInfo, init?: RequestInit) {
       throw new ConflictError(errorMessage);
     } else {
       throw Error(
-        "Request failed: " + response.status + " message: " + errorMessage
+        `Request failed: ${response.status} message: ${errorMessage}`
       );
     }
   }
@@ -51,7 +58,10 @@ export async function signUp(credentials: SignUpCredentials): Promise<User> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(credentials),
   });
-  return response.json();
+
+  const data = await response.json();
+  localStorage.setItem("token", data.token); // Zapisz token JWT po udanej rejestracji
+  return data.user;
 }
 
 export interface LoginCredentials {
@@ -65,11 +75,15 @@ export async function login(credentials: LoginCredentials): Promise<User> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(credentials),
   });
-  return response.json();
+
+  const data = await response.json();
+  localStorage.setItem("token", data.token); // Zapisz token JWT po udanym logowaniu
+  return data.user;
 }
 
 export async function logout() {
   await fetchData("api/users/logout", { method: "POST" });
+  localStorage.removeItem("token"); // Usuń token JWT podczas wylogowania
 }
 
 export async function fetchNotes(): Promise<Note[]> {

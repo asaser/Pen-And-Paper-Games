@@ -20,7 +20,7 @@ function App() {
         const user = await NotesApi.getLoggedInUser();
         setLoggedInUser(user);
       } catch (error) {
-        console.error(error);
+        console.error("User is not logged in:", error);
       }
     }
     fetchLoggedInUser();
