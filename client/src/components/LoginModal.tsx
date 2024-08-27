@@ -23,7 +23,7 @@ const style = {
 
 interface LoginModalProps {
   onDismiss: () => void;
-  onLoginSuccessful: (user: User) => void;
+  onLoginSuccessful: (user: User, token: string) => void;
 }
 
 const LoginModal = ({ onDismiss, onLoginSuccessful }: LoginModalProps) => {
@@ -36,8 +36,8 @@ const LoginModal = ({ onDismiss, onLoginSuccessful }: LoginModalProps) => {
 
   async function onSubmit(credentials: LoginCredentials) {
     try {
-      const user = await NotesApi.login(credentials);
-      onLoginSuccessful(user);
+      const { user, token } = await NotesApi.login(credentials);
+      onLoginSuccessful(user, token);
     } catch (error) {
       if (error instanceof UnauthorizedError) {
         setErrorText(error.message);

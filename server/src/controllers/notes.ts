@@ -5,7 +5,8 @@ import mongoose from "mongoose";
 import { asserIsDefined } from "../util/asserIsDefined";
 
 export const getNotes: RequestHandler = async (req, res, next) => {
-  const authenticatedUserId = req.session.userId;
+  const authenticatedUserId = req.userId;
+
   try {
     asserIsDefined(authenticatedUserId);
 
@@ -18,7 +19,7 @@ export const getNotes: RequestHandler = async (req, res, next) => {
 
 export const getNote: RequestHandler = async (req, res, next) => {
   const noteId = req.params.noteId;
-  const authenticatedUserId = req.session.userId;
+  const authenticatedUserId = req.userId;
 
   try {
     asserIsDefined(authenticatedUserId);
@@ -34,7 +35,7 @@ export const getNote: RequestHandler = async (req, res, next) => {
     }
 
     if (!note.userId.equals(authenticatedUserId)) {
-      throw createHttpError(401, "You can not access this note");
+      throw createHttpError(401, "You cannot access this note");
     }
 
     res.status(200).json(note);
@@ -43,20 +44,9 @@ export const getNote: RequestHandler = async (req, res, next) => {
   }
 };
 
-interface CreateNoteBody {
-  title?: string;
-  text?: string;
-}
-
-export const createNote: RequestHandler<
-  unknown,
-  unknown,
-  CreateNoteBody,
-  unknown
-> = async (req, res, next) => {
-  const title = req.body.title;
-  const text = req.body.text;
-  const authenticatedUserId = req.session.userId;
+export const createNote: RequestHandler = async (req, res, next) => {
+  const { title, text } = req.body;
+  const authenticatedUserId = req.userId;
 
   try {
     asserIsDefined(authenticatedUserId);
@@ -67,8 +57,8 @@ export const createNote: RequestHandler<
 
     const newNote = await NoteModel.create({
       userId: authenticatedUserId,
-      title: title,
-      text: text,
+      title,
+      text,
     });
 
     res.status(201).json(newNote);
@@ -77,25 +67,10 @@ export const createNote: RequestHandler<
   }
 };
 
-interface UpdateNoteParams {
-  noteId: string;
-}
-
-interface UpdateNoteBody {
-  title?: string;
-  text?: string;
-}
-
-export const updateNote: RequestHandler<
-  UpdateNoteParams,
-  unknown,
-  UpdateNoteBody,
-  unknown
-> = async (req, res, next) => {
+export const updateNote: RequestHandler = async (req, res, next) => {
   const noteId = req.params.noteId;
-  const newTitle = req.body.title;
-  const newText = req.body.text;
-  const authenticatedUserId = req.session.userId;
+  const { title, text } = req.body;
+  const authenticatedUserId = req.userId;
 
   try {
     asserIsDefined(authenticatedUserId);
@@ -104,7 +79,7 @@ export const updateNote: RequestHandler<
       throw createHttpError(400, "Invalid note ID");
     }
 
-    if (!newTitle) {
+    if (!title) {
       throw createHttpError(400, "Note must have a title");
     }
 
@@ -115,15 +90,15 @@ export const updateNote: RequestHandler<
     }
 
     if (!note.userId.equals(authenticatedUserId)) {
-      throw createHttpError(401, "You can not access this note");
+      throw createHttpError(401, "You cannot access this note");
     }
 
-    note.title = newTitle;
-    note.text = newText;
+    note.title = title;
+    note.text = text;
 
-    const updatedNote = await note.save();
+    await note.save();
 
-    res.status(200).json(updatedNote);
+    res.status(200).json(note);
   } catch (error) {
     next(error);
   }
@@ -131,7 +106,7 @@ export const updateNote: RequestHandler<
 
 export const deleteNote: RequestHandler = async (req, res, next) => {
   const noteId = req.params.noteId;
-  const authenticatedUserId = req.session.userId;
+  const authenticatedUserId = req.userId;
 
   try {
     asserIsDefined(authenticatedUserId);
@@ -147,7 +122,7 @@ export const deleteNote: RequestHandler = async (req, res, next) => {
     }
 
     if (!note.userId.equals(authenticatedUserId)) {
-      throw createHttpError(401, "You can not access this note");
+      throw createHttpError(401, "You cannot access this note");
     }
 
     await note.deleteOne();

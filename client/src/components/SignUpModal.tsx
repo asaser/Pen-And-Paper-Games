@@ -23,7 +23,7 @@ const style = {
 
 interface SignUpModalProps {
   onDismiss: () => void;
-  onSignUpSuccesful: (user: User) => void;
+  onSignUpSuccesful: (user: User, token: string) => void;
 }
 
 const SignUpModal = ({ onDismiss, onSignUpSuccesful }: SignUpModalProps) => {
@@ -36,8 +36,9 @@ const SignUpModal = ({ onDismiss, onSignUpSuccesful }: SignUpModalProps) => {
 
   async function onSubmit(credentials: SignUpCredentials) {
     try {
-      const newUser = await NotesApi.signUp(credentials);
-      onSignUpSuccesful(newUser);
+      const { user, token } = await NotesApi.signUp(credentials);
+      localStorage.setItem("token", token);
+      onSignUpSuccesful(user, token);
     } catch (error) {
       if (error instanceof ConflictError) {
         setErrorText(error.message);
@@ -47,6 +48,7 @@ const SignUpModal = ({ onDismiss, onSignUpSuccesful }: SignUpModalProps) => {
       console.log(error);
     }
   }
+
   return (
     <Modal
       open
