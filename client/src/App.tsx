@@ -23,7 +23,7 @@ function App() {
           setLoggedInUser(user);
         }
       } catch (error) {
-        console.error(error);
+        console.error("User is not logged in:", error);
       }
     }
     fetchLoggedInUser();
@@ -58,6 +58,7 @@ function App() {
               setLoggedInUser(user);
               localStorage.setItem("token", token);
               setShowSignUpModal(false);
+              localStorage.setItem("token", user.token); // Zapisz token JWT w localStorage
             }}
           />
         )}
@@ -68,6 +69,7 @@ function App() {
               setLoggedInUser(user);
               localStorage.setItem("token", token);
               setShowLoginModal(false);
+              localStorage.setItem("token", user.token); // Zapisz token JWT w localStorage
             }}
           />
         )}

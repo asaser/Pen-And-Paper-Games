@@ -3,12 +3,31 @@ import { Note } from "../models/note";
 import { User } from "../models/user";
 
 async function fetchData(input: RequestInfo, init?: RequestInit) {
-  const response = await fetch(input, init);
+  const token = localStorage.getItem("token"); // Pobierz token JWT z localStorage
+
+  // Dodaj nagłówek Authorization jeśli token istnieje
+  const headers = {
+    ...init?.headers,
+    Authorization: token ? `Bearer ${token}` : "",
+  };
+
+  // Wykonanie żądania do API
+  const response = await fetch(input, {
+    ...init,
+    headers,
+  });
+
   if (response.ok) {
     return response;
   } else {
-    const errorBody = await response.json();
-    const errorMessage = errorBody.error;
+    let errorMessage = "Request failed";
+
+    try {
+      const errorBody = await response.json();
+      errorMessage = errorBody.error || errorMessage;
+    } catch (err) {
+      console.error("Failed to parse error response:", err);
+    }
 
     if (response.status === 401) {
       throw new UnauthorizedError(errorMessage);
@@ -47,7 +66,10 @@ export async function signUp(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(credentials),
   });
-  return response.json();
+
+  const data = await response.json();
+  localStorage.setItem("token", data.token); // Zapisz token JWT po udanej rejestracji
+  return data.user;
 }
 
 export interface LoginCredentials {
@@ -63,7 +85,10 @@ export async function login(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(credentials),
   });
-  return response.json();
+
+  const data = await response.json();
+  localStorage.setItem("token", data.token); // Zapisz token JWT po udanym logowaniu
+  return data.user;
 }
 
 export async function logout(token: string) {
