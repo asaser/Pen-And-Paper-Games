@@ -9,6 +9,7 @@ export const getNotes: RequestHandler = async (req, res, next) => {
 
   try {
     asserIsDefined(authenticatedUserId);
+
     const notes = await NoteModel.find({ userId: authenticatedUserId }).exec();
     res.status(200).json(notes);
   } catch (error) {
@@ -21,7 +22,7 @@ export const getNote: RequestHandler = async (req, res, next) => {
   const authenticatedUserId = req.userId;
 
   try {
-    // asserIsDefined(authenticatedUserId);
+    asserIsDefined(authenticatedUserId);
 
     if (!mongoose.isValidObjectId(noteId)) {
       throw createHttpError(400, "Invalid note ID");
@@ -37,7 +38,7 @@ export const getNote: RequestHandler = async (req, res, next) => {
       throw createHttpError(401, "You cannot access this note");
     }
 
-    // res.status(200).json(note);
+    res.status(200).json(note);
   } catch (error) {
     next(error);
   }
@@ -48,7 +49,7 @@ export const createNote: RequestHandler = async (req, res, next) => {
   const authenticatedUserId = req.userId;
 
   try {
-    // asserIsDefined(authenticatedUserId);
+    asserIsDefined(authenticatedUserId);
 
     if (!title) {
       throw createHttpError(400, "Note must have a title");
@@ -72,7 +73,7 @@ export const updateNote: RequestHandler = async (req, res, next) => {
   const authenticatedUserId = req.userId;
 
   try {
-    // asserIsDefined(authenticatedUserId);
+    asserIsDefined(authenticatedUserId);
 
     if (!mongoose.isValidObjectId(noteId)) {
       throw createHttpError(400, "Invalid note ID");
@@ -108,7 +109,7 @@ export const deleteNote: RequestHandler = async (req, res, next) => {
   const authenticatedUserId = req.userId;
 
   try {
-    // asserIsDefined(authenticatedUserId);
+    asserIsDefined(authenticatedUserId);
 
     if (!mongoose.isValidObjectId(noteId)) {
       throw createHttpError(400, "Invalid note ID");

@@ -5,14 +5,6 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import env from "../util/validateEnv";
 
-// Generowanie JWT
-const generateToken = (userId: string) => {
-  return jwt.sign({ userId }, env.JWT_SECRET, {
-    expiresIn: "1h", // Możesz dostosować czas ważności tokenu
-  });
-};
-
-// Zwracanie zalogowanego użytkownika
 export const getAuthenticatedUser: RequestHandler = async (req, res, next) => {
   try {
     const user = await UserModel.findById(req.userId).select("+email").exec();
@@ -108,7 +100,6 @@ export const login: RequestHandler<
   }
 };
 
-// Wylogowanie użytkownika - nie jest wymagane przy JWT, bo nie ma sesji na serwerze
 export const logout: RequestHandler = (req, res, next) => {
   // Logout is typically handled on the client side by removing the JWT from storage
   res.sendStatus(200);
