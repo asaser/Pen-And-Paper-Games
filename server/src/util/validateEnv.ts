@@ -4,5 +4,4 @@ export default cleanEnv(process.env, {
   MONGODB_URI: str(),
   PORT: port(),
   JWT_SECRET: str(),
-  SESSION_SECRET: str(),
 });
