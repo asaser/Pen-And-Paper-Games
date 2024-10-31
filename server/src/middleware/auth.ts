@@ -13,7 +13,7 @@ export const requiresAuth: RequestHandler = (req, res, next) => {
 
   try {
     const payload = jwt.verify(token, env.JWT_SECRET) as { userId: string };
-    req.userId = payload.userId; // Przechowujemy userId w req, aby móc go użyć w kontrolerach
+    req.userId = payload.userId;
     next();
   } catch (error) {
     next(createHttpError(401, "Invalid token"));
