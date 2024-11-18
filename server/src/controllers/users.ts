@@ -101,6 +101,5 @@ export const login: RequestHandler<
 };
 
 export const logout: RequestHandler = (req, res, next) => {
-  // Logout is typically handled on the client side by removing the JWT from storage
   res.sendStatus(200);
 };
