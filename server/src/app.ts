@@ -1,11 +1,11 @@
+import cors from "cors";
 import "dotenv/config";
 import express, { Express, NextFunction, Request, Response } from "express";
-import cors from "cors";
+import createHttpError, { isHttpError } from "http-errors";
 import morgan from "morgan";
+import { requiresAuth } from "./middleware/auth";
 import notesRoutes from "./routes/notes";
 import userRoutes from "./routes/users";
-import createHttpError, { isHttpError } from "http-errors";
-import { requiresAuth } from "./middleware/auth";
 
 const app: Express = express();
 

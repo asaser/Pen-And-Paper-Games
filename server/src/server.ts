@@ -1,7 +1,6 @@
 import app from "./app";
 import env from "./util/validateEnv";
 import mongoose from "mongoose";
-// Install additional library `npm i envalid` and `eslint` but not latest version, only 8.30 version or something similar
 
 const uri = env.MONGODB_URI || "mongodb://localhost:27017";
 const port = env.PORT || 5000;
