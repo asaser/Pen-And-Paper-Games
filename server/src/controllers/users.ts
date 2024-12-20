@@ -91,7 +91,7 @@ export const login: RequestHandler<
     }
 
     const token = jwt.sign({ userId: user._id }, env.JWT_SECRET, {
-      expiresIn: "2h",
+      expiresIn: "1h",
     });
 
     res.status(200).json({ user, token });
