@@ -16,4 +16,3 @@
 
 - [ ] I have performed a self-review of my code
 - [ ] Code cover by tests
-- [ ] Do we need to implement analytics?
