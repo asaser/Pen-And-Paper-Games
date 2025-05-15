@@ -34,8 +34,8 @@ const NotesPageLoggedInView = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No token available");
-      await NotesApi.deleteNote(note._id, token);
-      setNotes(notes.filter((existingNote) => existingNote._id !== note._id));
+      await NotesApi.deleteNote(note.id, token);
+      setNotes(notes.filter((existingNote) => existingNote.id !== note.id));
     } catch (error) {
       console.error(error);
       alert(error);
@@ -48,7 +48,7 @@ const NotesPageLoggedInView = () => {
         <Note
           note={note}
           onNoteClick={setNoteToEdit}
-          key={note._id}
+          key={note.id}
           onDeleteNoteClick={deleteNote}
         />
       ))}
@@ -74,9 +74,7 @@ const NotesPageLoggedInView = () => {
           onNoteSaved={(updatedNote) => {
             setNotes(
               notes.map((existingNote) =>
-                existingNote._id === updatedNote._id
-                  ? updatedNote
-                  : existingNote
+                existingNote.id === updatedNote.id ? updatedNote : existingNote
               )
             );
             setNoteToEdit(null);
