@@ -43,7 +43,7 @@ const AddEditNoteDialog = ({
 
       let noteResponse: Note;
       if (noteToEdit) {
-        noteResponse = await NoteApi.updateNote(noteToEdit._id, input, token);
+        noteResponse = await NoteApi.updateNote(noteToEdit.id, input, token);
       } else {
         noteResponse = await NoteApi.createNote(input, token);
       }

@@ -60,13 +60,13 @@ const LoginModal = ({ onDismiss, onLoginSuccessful }: LoginModalProps) => {
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <TextInputField
-            name="username"
-            label="Username"
-            type="text"
-            placeholder="Username"
+            name="email"
+            label="Email"
+            type="email"
+            placeholder="Email"
             register={register}
             registerOptions={{ required: "Required" }}
-            error={errors.username}
+            error={errors.email}
           />
           <TextInputField
             name="password"
