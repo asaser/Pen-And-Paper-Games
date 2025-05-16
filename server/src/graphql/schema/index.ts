@@ -1,6 +1,6 @@
 import { gql } from "apollo-server-express";
-import UserModel from "../../models/user";
-import NoteModel from "../../models/note";
+import userSchema from "../../models/user";
+import noteSchema from "../../models/note";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import env from "../../util/validateEnv";
@@ -37,15 +37,16 @@ export const typeDefs = gql`
 export const resolvers = {
   Query: {
     users: async () => {
-      return await UserModel.find().select("_id username email").exec();
+      return await userSchema.find().select("_id username email").exec();
     },
     notes: async (_: any, __: any, context: any) => {
       if (!context.userId) throw new Error("Not authenticated");
-      return await NoteModel.find({ userId: context.userId }).exec();
+      return await noteSchema.find({ userId: context.userId }).exec();
     },
     me: async (_: any, __: any, context: any) => {
       if (!context.userId) return null;
-      return await UserModel.findById(context.userId)
+      return await userSchema
+        .findById(context.userId)
         .select("_id username email")
         .exec();
     },
@@ -55,12 +56,12 @@ export const resolvers = {
       if (!username || !email || !password) {
         throw new Error("Parameters missing");
       }
-      const existingUsername = await UserModel.findOne({ username });
+      const existingUsername = await userSchema.findOne({ username });
       if (existingUsername) throw new Error("Username already taken");
-      const existingEmail = await UserModel.findOne({ email });
+      const existingEmail = await userSchema.findOne({ email });
       if (existingEmail) throw new Error("Email already taken");
       const passwordHashed = await bcrypt.hash(password, 10);
-      const newUser = await UserModel.create({
+      const newUser = await userSchema.create({
         username,
         email,
         password: passwordHashed,
@@ -72,7 +73,7 @@ export const resolvers = {
       };
     },
     login: async (_: any, { email, password }: any, context: any) => {
-      const user = await UserModel.findOne({ email }).select("+password");
+      const user = await userSchema.findOne({ email }).select("+password");
       if (!user) throw new Error("Invalid credentials");
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) throw new Error("Invalid credentials");
@@ -83,7 +84,7 @@ export const resolvers = {
     },
     createNote: async (_: any, { title, text }: any, context: any) => {
       if (!context.userId) throw new Error("Not authenticated");
-      const note = await NoteModel.create({
+      const note = await noteSchema.create({
         title,
         text,
         userId: context.userId,
@@ -92,7 +93,7 @@ export const resolvers = {
     },
     updateNote: async (_: any, { id, title, text }: any, context: any) => {
       if (!context.userId) throw new Error("Not authenticated");
-      const note = await NoteModel.findOneAndUpdate(
+      const note = await noteSchema.findOneAndUpdate(
         { _id: id, userId: context.userId },
         { title, text },
         { new: true }
@@ -102,7 +103,7 @@ export const resolvers = {
     },
     deleteNote: async (_: any, { id }: any, context: any) => {
       if (!context.userId) throw new Error("Not authenticated");
-      const result = await NoteModel.findOneAndDelete({
+      const result = await noteSchema.findOneAndDelete({
         _id: id,
         userId: context.userId,
       });
