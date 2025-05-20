@@ -32,9 +32,9 @@ async function fetchGraphQL(
 }
 
 export async function getLoggedInUser(token: string): Promise<User> {
-  const query = `query { me { id username email } }`;
+  const query = `query { currentUser { id username email } }`;
   const data = await fetchGraphQL(query, {}, token);
-  return data.me;
+  return data.currentUser;
 }
 
 export interface SignUpCredentials {
@@ -66,10 +66,10 @@ export async function login(
     login(email: $email, password: $password)
   }`;
   const data = await fetchGraphQL(mutation, credentials);
-  // After login, fetch user info using 'me'
-  const userQuery = `query { me { id username email } }`;
+  // After login, fetch user info using 'currentUser'
+  const userQuery = `query { currentUser { id username email } }`;
   const userData = await fetchGraphQL(userQuery, {}, data.login);
-  return { user: userData.me, token: data.login };
+  return { user: userData.currentUser, token: data.login };
 }
 
 export async function logout(token: string) {

@@ -21,7 +21,7 @@ export const typeDefs = gql`
   type Query {
     users: [User!]!
     notes: [Note!]!
-    me: User
+    currentUser: User
   }
 
   type Mutation {
@@ -35,7 +35,7 @@ export const resolvers = {
     users: async () => {
       return await userModel.find().select("_id username email").exec();
     },
-    me: async (_: any, __: any, context: any) => {
+    currentUser: async (_: any, __: any, context: any) => {
       if (!context.userId) return null;
       return await userModel
         .findById(context.userId)
