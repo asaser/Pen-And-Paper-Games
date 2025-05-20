@@ -5,7 +5,7 @@ import {
   DialogTitle,
   Grid,
 } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Note } from "../models/note";
 import { useForm } from "react-hook-form";
 import { NoteInput } from "../network/notes_api";
@@ -29,12 +29,22 @@ const AddEditNoteDialog = ({
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    reset,
   } = useForm<NoteInput>({
     defaultValues: {
       title: noteToEdit?.title || "",
       text: noteToEdit?.text || "",
     },
   });
+
+  useEffect(() => {
+    if (open) {
+      reset({
+        title: noteToEdit?.title || "",
+        text: noteToEdit?.text || "",
+      });
+    }
+  }, [open, reset, noteToEdit]);
 
   async function onSubmit(input: NoteInput) {
     try {
@@ -70,7 +80,7 @@ const AddEditNoteDialog = ({
         onClick={handleClickOpen}
         className={`${styleUtils.blockCenter}`}
       >
-        Add Note
+        {noteToEdit ? "Edit Note" : "Add Note"}
       </Button>
       <Dialog
         open={open}
