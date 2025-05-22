@@ -23,7 +23,12 @@ interface NavBarProps {
   onLogoutSuccessful: () => void;
 }
 
-const pages = [{ name: "Privacy", path: "/privacy" }];
+const pages = [
+  { name: "Privacy", path: "/privacy" },
+  { name: "Notes", path: "/notes" },
+  { name: "Universum", path: "/universum" },
+  { name: "Character", path: "/character" },
+];
 
 const NavBar = ({
   loggedInUser,

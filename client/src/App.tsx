@@ -8,6 +8,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import NotesPage from "./pages/NotesPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import UniversumPage from "./pages/UniversumPage";
+import CharacterPage from "./pages/CharacterPage";
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
@@ -43,11 +45,13 @@ function App() {
         />
         <div>
           <Routes>
+            <Route path="/privacy" element={<PrivacyPage />} />
             <Route
-              path="/"
+              path="/notes"
               element={<NotesPage loggedInUser={loggedInUser} />}
             />
-            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/universum" element={<UniversumPage />} />
+            <Route path="/character" element={<CharacterPage />} />
             <Route path="/*" element={<NotFoundPage />} />
           </Routes>
         </div>
