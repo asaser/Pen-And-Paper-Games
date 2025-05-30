@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import LoginModal from "./components/LoginModal";
+import LoginPage from "./components/LoginPage";
 import NavBar from "./components/NavBar";
 import SignUpModal from "./components/SignUpModal";
 import { User } from "./models/user";
@@ -14,7 +14,7 @@ import CharacterPage from "./pages/CharacterPage";
 function App() {
   const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
   const [showSignUpModal, setShowSignUpModal] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showLoginPage, setShowLoginPage] = useState(false);
 
   useEffect(() => {
     async function fetchLoggedInUser() {
@@ -23,8 +23,11 @@ function App() {
         if (token) {
           const user = await NotesApi.getLoggedInUser(token);
           setLoggedInUser(user);
+        } else {
+          setShowLoginPage(true);
         }
       } catch (error) {
+        setShowLoginPage(true);
         console.error(error);
       }
     }
@@ -34,44 +37,49 @@ function App() {
   return (
     <BrowserRouter>
       <div>
-        <NavBar
-          loggedInUser={loggedInUser}
-          onLogInClicked={() => setShowLoginModal(true)}
-          onSignUpClicked={() => setShowSignUpModal(true)}
-          onLogoutSuccessful={() => {
-            setLoggedInUser(null);
-            localStorage.removeItem("token");
-          }}
-        />
-        <div>
-          <Routes>
-            <Route path="/privacy" element={<PrivacyPage />} />
-            <Route
-              path="/notes"
-              element={<NotesPage loggedInUser={loggedInUser} />}
+        {showLoginPage && !loggedInUser ? (
+          <LoginPage
+            onLoginSuccessful={(user: User, token: string) => {
+              setLoggedInUser(user);
+              localStorage.setItem("token", token);
+              setShowLoginPage(false);
+            }}
+            onSignUpClicked={() => setShowSignUpModal(true)}
+          />
+        ) : (
+          <>
+            <NavBar
+              loggedInUser={loggedInUser}
+              onLogInClicked={() => setShowLoginPage(true)}
+              onSignUpClicked={() => setShowSignUpModal(true)}
+              onLogoutSuccessful={() => {
+                setLoggedInUser(null);
+                localStorage.removeItem("token");
+                setShowLoginPage(true);
+              }}
             />
-            <Route path="/universum" element={<UniversumPage />} />
-            <Route path="/character" element={<CharacterPage />} />
-            <Route path="/*" element={<NotFoundPage />} />
-          </Routes>
-        </div>
+            <div>
+              <Routes>
+                <Route path="/privacy" element={<PrivacyPage />} />
+                <Route
+                  path="/notes"
+                  element={<NotesPage loggedInUser={loggedInUser} />}
+                />
+                <Route path="/universum" element={<UniversumPage />} />
+                <Route path="/character" element={<CharacterPage />} />
+                <Route path="/*" element={<NotFoundPage />} />
+              </Routes>
+            </div>
+          </>
+        )}
         {showSignUpModal && (
           <SignUpModal
             onDismiss={() => setShowSignUpModal(false)}
-            onSignUpSuccesful={(user, token) => {
+            onSignUpSuccesful={(user: User, token: string) => {
               setLoggedInUser(user);
               localStorage.setItem("token", token);
               setShowSignUpModal(false);
-            }}
-          />
-        )}
-        {showLoginModal && (
-          <LoginModal
-            onDismiss={() => setShowLoginModal(false)}
-            onLoginSuccessful={(user, token) => {
-              setLoggedInUser(user);
-              localStorage.setItem("token", token);
-              setShowLoginModal(false);
+              setShowLoginPage(false);
             }}
           />
         )}
