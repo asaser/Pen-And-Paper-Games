@@ -44,17 +44,18 @@ const LoginPage = ({ onLoginSuccessful, onSignUpClicked }: LoginPageProps) => {
     <div className={styles.loginPageRoot}>
       <div className={styles.loginBox}>
         <div className={styles.logo}>
-          <img src={logo} alt="Logo" style={{ height: 48, marginBottom: 8 }} />
+          <img src={logo} alt="Logo" className={styles.applicationLogo} />
           <div>Pen & Paper Games</div>
         </div>
-        <div className={styles.signupText}>Sign up here</div>
-        <Button
-          variant="outlined"
-          className={styles.signupButton}
+        <div className={styles.signupText}>Don't have an account, yet?</div>
+        <span
+          role="button"
+          className={styles.signupButtonText}
           onClick={onSignUpClicked}
+          tabIndex={0}
         >
           Sign Up
-        </Button>
+        </span>
         {errorText && <Alert severity="error">{errorText}</Alert>}
         <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
           <TextInputField

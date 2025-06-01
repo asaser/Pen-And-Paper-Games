@@ -1,5 +1,3 @@
-/* // TODO - Remove as much possible and try to add Material UI styles instead */
-
 .loginPageRoot {
   min-height: 100vh;
   width: 100vw;
@@ -24,8 +22,16 @@
 .logo {
   font-size: 2rem;
   font-weight: bold;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   color: #222;
+}
+
+.applicationLogo {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  height: 48px;
+  margin-bottom: 8px;
 }
 
 .signupText {
@@ -33,27 +39,31 @@
   color: #444;
 }
 
-.signupButton {
+.signupButtonText {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-bottom: 1.5rem;
   width: 100%;
+  cursor: pointer;
+  color: #1976d2;
+  text-decoration: underline;
 }
 
 .inputField {
-  margin-bottom: 1rem;
   width: 100%;
 }
 
 .forgotPassword {
   color: #1976d2;
   cursor: pointer;
-  align-self: flex-end;
-  margin-bottom: 1.5rem;
-  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
   text-decoration: underline;
+  text-align: right;
 }
 
 .loginButton {
-  margin-bottom: 1.5rem;
   width: 100%;
 }
 
