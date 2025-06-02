@@ -78,13 +78,15 @@ const LoginPage = ({ onLoginSuccessful, onSignUpClicked }: LoginPageProps) => {
             error={errors.password}
             className={styles.inputField}
           />
-          <div
-            className={styles.forgotPassword}
-            tabIndex={0}
-            role="button"
-            onClick={() => alert("Forgot password not implemented")}
-          >
-            Forgot Password?
+          <div className={styles.forgotPasswordMain}>
+            <span
+              className={styles.forgotPasswordText}
+              tabIndex={0}
+              role="button"
+              onClick={() => alert("Forgot password not implemented")}
+            >
+              Forgot Password?
+            </span>
           </div>
           <Button
             type="submit"
