@@ -1,25 +1,16 @@
+// TODO - change styling and add styling dedicated to Sign Up Modal
+
 import { useForm } from "react-hook-form";
 import { User } from "../models/user";
 import { SignUpCredentials } from "../network/notes_api";
 import * as NotesApi from "../network/notes_api";
-import { Alert, Box, Button, Modal } from "@mui/material";
+import { Alert, Button } from "@mui/material";
 import TextInputField from "./form/TextInputField";
 
-import styleUtils from "../styles/utils.module.css";
+import styles from "../styles/LoginPage.module.css";
+import logo from "../logo.svg";
 import { useState } from "react";
 import { ConflictError } from "../errors/http_errors";
-
-const style = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
 
 interface SignUpModalProps {
   onDismiss: () => void;
@@ -49,16 +40,20 @@ const SignUpModal = ({ onDismiss, onSignUpSuccesful }: SignUpModalProps) => {
     }
   }
 
+  function handleGoogleSignUp() {
+    alert("Google sign up not implemented");
+  }
+
   return (
-    <Modal
-      open
-      onClose={onDismiss}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
-      <Box sx={style}>
+    <div className={styles.loginPageRoot}>
+      <div className={styles.loginBox}>
+        <div className={styles.logo}>
+          <img src={logo} alt="Logo" className={styles.applicationLogo} />
+          <div>Pen & Paper Games</div>
+        </div>
+        <div className={styles.signupText}>Create your account</div>
         {errorText && <Alert severity="error">{errorText}</Alert>}
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
           <TextInputField
             name="username"
             label="Username"
@@ -67,6 +62,7 @@ const SignUpModal = ({ onDismiss, onSignUpSuccesful }: SignUpModalProps) => {
             register={register}
             registerOptions={{ required: "Required" }}
             error={errors.username}
+            className={styles.inputField}
           />
           <TextInputField
             name="email"
@@ -76,6 +72,7 @@ const SignUpModal = ({ onDismiss, onSignUpSuccesful }: SignUpModalProps) => {
             register={register}
             registerOptions={{ required: "Required" }}
             error={errors.email}
+            className={styles.inputField}
           />
           <TextInputField
             name="password"
@@ -85,17 +82,42 @@ const SignUpModal = ({ onDismiss, onSignUpSuccesful }: SignUpModalProps) => {
             register={register}
             registerOptions={{ required: "Required" }}
             error={errors.password}
+            className={styles.inputField}
           />
           <Button
             type="submit"
+            variant="contained"
             disabled={isSubmitting}
-            className={styleUtils.width100}
+            className={styles.loginButton}
           >
             Sign Up
           </Button>
         </form>
-      </Box>
-    </Modal>
+        <div className={styles.orDivider}>
+          <div className={styles.orDividerLine}></div>
+          <div className={styles.orDividerText}>or</div>
+          <div className={styles.orDividerLine}></div>
+        </div>
+        <button
+          className={styles.googleButton}
+          type="button"
+          onClick={handleGoogleSignUp}
+        >
+          <img alt="Google" style={{ width: 20, height: 20 }} />
+          Google
+        </button>
+        <div style={{ marginTop: 16 }}>
+          <span
+            role="button"
+            className={styles.signupButtonText}
+            onClick={onDismiss}
+            tabIndex={0}
+          >
+            Already have an account? Log in
+          </span>
+        </div>
+      </div>
+    </div>
   );
 };
 

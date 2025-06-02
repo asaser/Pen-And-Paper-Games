@@ -4,7 +4,13 @@ import NavBar from "./components/NavBar";
 import SignUpModal from "./components/SignUpModal";
 import { User } from "./models/user";
 import * as NotesApi from "./network/notes_api";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import {
+  Route,
+  Routes,
+  useNavigate,
+  useLocation,
+  Navigate,
+} from "react-router-dom";
 import NotesPage from "./pages/NotesPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -13,8 +19,8 @@ import CharacterPage from "./pages/CharacterPage";
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
-  const [showSignUpModal, setShowSignUpModal] = useState(false);
-  const [showLoginPage, setShowLoginPage] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     async function fetchLoggedInUser() {
@@ -23,68 +29,89 @@ function App() {
         if (token) {
           const user = await NotesApi.getLoggedInUser(token);
           setLoggedInUser(user);
-        } else {
-          setShowLoginPage(true);
         }
       } catch (error) {
-        setShowLoginPage(true);
+        setLoggedInUser(null);
         console.error(error);
       }
     }
     fetchLoggedInUser();
   }, []);
 
+  useEffect(() => {
+    if (
+      !loggedInUser &&
+      location.pathname !== "/login" &&
+      location.pathname !== "/register"
+    ) {
+      navigate("/login", { replace: true });
+    }
+  }, [loggedInUser, location.pathname, navigate]);
+
+  const isAuthPage =
+    location.pathname === "/login" || location.pathname === "/register";
+
   return (
-    <BrowserRouter>
+    <div>
+      {!isAuthPage && (
+        <NavBar
+          loggedInUser={loggedInUser}
+          onLogInClicked={() => navigate("/login")}
+          onSignUpClicked={() => navigate("/register")}
+          onLogoutSuccessful={() => {
+            setLoggedInUser(null);
+            localStorage.removeItem("token");
+            navigate("/login");
+          }}
+        />
+      )}
       <div>
-        {showLoginPage && !loggedInUser ? (
-          <LoginPage
-            onLoginSuccessful={(user: User, token: string) => {
-              setLoggedInUser(user);
-              localStorage.setItem("token", token);
-              setShowLoginPage(false);
-            }}
-            onSignUpClicked={() => setShowSignUpModal(true)}
-          />
-        ) : (
-          <>
-            <NavBar
-              loggedInUser={loggedInUser}
-              onLogInClicked={() => setShowLoginPage(true)}
-              onSignUpClicked={() => setShowSignUpModal(true)}
-              onLogoutSuccessful={() => {
-                setLoggedInUser(null);
-                localStorage.removeItem("token");
-                setShowLoginPage(true);
-              }}
-            />
-            <div>
-              <Routes>
-                <Route path="/privacy" element={<PrivacyPage />} />
-                <Route
-                  path="/notes"
-                  element={<NotesPage loggedInUser={loggedInUser} />}
+        <Routes>
+          <Route
+            path="/login"
+            element={
+              loggedInUser ? (
+                <Navigate to="/notes" replace />
+              ) : (
+                <LoginPage
+                  onLoginSuccessful={(user: User, token: string) => {
+                    setLoggedInUser(user);
+                    localStorage.setItem("token", token);
+                    navigate("/notes");
+                  }}
+                  onSignUpClicked={() => navigate("/register")}
                 />
-                <Route path="/universum" element={<UniversumPage />} />
-                <Route path="/character" element={<CharacterPage />} />
-                <Route path="/*" element={<NotFoundPage />} />
-              </Routes>
-            </div>
-          </>
-        )}
-        {showSignUpModal && (
-          <SignUpModal
-            onDismiss={() => setShowSignUpModal(false)}
-            onSignUpSuccesful={(user: User, token: string) => {
-              setLoggedInUser(user);
-              localStorage.setItem("token", token);
-              setShowSignUpModal(false);
-              setShowLoginPage(false);
-            }}
+              )
+            }
           />
-        )}
+          <Route
+            path="/register"
+            element={
+              loggedInUser ? (
+                <Navigate to="/notes" replace />
+              ) : (
+                <SignUpModal
+                  onSignUpSuccesful={(user: User, token: string) => {
+                    setLoggedInUser(user);
+                    localStorage.setItem("token", token);
+                    navigate("/notes");
+                  }}
+                  onDismiss={() => navigate("/login")}
+                />
+              )
+            }
+          />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route
+            path="/notes"
+            element={<NotesPage loggedInUser={loggedInUser} />}
+          />
+          <Route path="/universum" element={<UniversumPage />} />
+          <Route path="/character" element={<CharacterPage />} />
+          <Route path="/*" element={<NotFoundPage />} />
+        </Routes>
       </div>
-    </BrowserRouter>
+    </div>
   );
 }
 
