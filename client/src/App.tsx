@@ -65,7 +65,18 @@ function App() {
           }}
         />
       )}
-      <div>
+      <div
+        style={
+          !isAuthPage
+            ? {
+                marginLeft: 240,
+                padding: "24px 24px 24px 0",
+                minHeight: "100vh",
+                background: "#fff",
+              }
+            : undefined
+        }
+      >
         <Routes>
           <Route
             path="/login"

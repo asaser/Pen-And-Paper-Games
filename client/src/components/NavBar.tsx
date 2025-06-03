@@ -1,21 +1,11 @@
-import MenuIcon from "@mui/icons-material/Menu";
-import {
-  AppBar,
-  Box,
-  Button,
-  Container,
-  IconButton,
-  Menu,
-  MenuItem,
-  Toolbar,
-  Typography,
-} from "@mui/material";
+import { Link, useLocation } from "react-router-dom";
 
-import { useState } from "react";
-import { Link } from "react-router-dom";
 import { User } from "../models/user";
 import NavBarLoggedInView from "./NavBarLoggedInView";
 import NavBarLoggedOutView from "./NavBarLoggedOutView";
+import styles from "../styles/NavBarVertical.module.css";
+import logo from "../logo.svg";
+
 interface NavBarProps {
   loggedInUser?: User | null;
   onSignUpClicked: () => void;
@@ -36,90 +26,53 @@ const NavBar = ({
   onLogInClicked,
   onLogoutSuccessful,
 }: NavBarProps) => {
-  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
-
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
+  const location = useLocation();
   return (
-    <AppBar position="static">
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
+    <nav className={styles.navbarContainer}>
+      <div>
+        <div className={styles.logoSection}>
+          <img src={logo} alt="Logo" className={styles.logoImage} />
+          <div className={styles.logoText}>Pen and Paper</div>
+        </div>
+        <div className={styles.navLinks}>
+          {pages.map((page) => (
+            <Link
+              key={page.name}
+              to={page.path}
+              className={
+                location.pathname === page.path
+                  ? `${styles.navLink} ${styles.navLinkActive}`
+                  : styles.navLink
+              }
             >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: "block", md: "none" },
-              }}
-            >
-              {pages.map((page) => (
-                <MenuItem key={page.name} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page.name}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => (
-              <Button
-                key={page.name}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
-                <Link
-                  to={page.path}
-                  style={{ textDecoration: "none", color: "inherit" }}
-                >
-                  {page.name}
-                </Link>
-              </Button>
-            ))}
-          </Box>
-          <Box sx={{ flexGrow: 0 }}>
-            <div>
-              {loggedInUser ? (
-                <NavBarLoggedInView
-                  user={loggedInUser}
-                  onLogoutSuccessful={onLogoutSuccessful}
-                />
-              ) : (
-                <NavBarLoggedOutView
-                  onLoginClicked={onLogInClicked}
-                  onSignUpClicked={onSignUpClicked}
-                />
-              )}
-            </div>
-          </Box>
-        </Toolbar>
-      </Container>
-    </AppBar>
+              {page.name}
+            </Link>
+          ))}
+        </div>
+        <div className={styles.divider} />
+      </div>
+      {loggedInUser ? (
+        <div style={{ width: "100%" }}>
+          <div className={styles.logoutSection}>
+            <NavBarLoggedInView
+              user={loggedInUser}
+              onLogoutSuccessful={onLogoutSuccessful}
+            />
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.signedInSection}>
+            Signed in as: {loggedInUser.username}
+          </div>
+        </div>
+      ) : (
+        <div className={styles.logoutSection}>
+          <NavBarLoggedOutView
+            onLoginClicked={onLogInClicked}
+            onSignUpClicked={onSignUpClicked}
+          />
+        </div>
+      )}
+    </nav>
   );
 };
 
