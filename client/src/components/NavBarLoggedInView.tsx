@@ -26,12 +26,13 @@ const NavBarLoggedInView = ({
   }
 
   return (
-    <>
-      <p style={{ color: "#FFF" }}>Signed in as: {user.username}</p>
-      <Button onClick={logout} sx={{ my: 2, color: "white", display: "block" }}>
-        Log out
-      </Button>
-    </>
+    <Button
+      onClick={logout}
+      sx={{ my: 2, color: "white", display: "block" }}
+      className="logoutButton"
+    >
+      Log out
+    </Button>
   );
 };
 
