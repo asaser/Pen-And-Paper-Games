@@ -19,6 +19,7 @@ import CharacterPage from "./pages/CharacterPage";
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -33,6 +34,8 @@ function App() {
       } catch (error) {
         setLoggedInUser(null);
         console.error(error);
+      } finally {
+        setIsAuthLoading(false);
       }
     }
     fetchLoggedInUser();
@@ -40,16 +43,21 @@ function App() {
 
   useEffect(() => {
     if (
+      !isAuthLoading &&
       !loggedInUser &&
       location.pathname !== "/login" &&
       location.pathname !== "/register"
     ) {
       navigate("/login", { replace: true });
     }
-  }, [loggedInUser, location.pathname, navigate]);
+  }, [loggedInUser, location.pathname, navigate, isAuthLoading]);
 
   const isAuthPage =
     location.pathname === "/login" || location.pathname === "/register";
+
+  if (isAuthLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
@@ -70,7 +78,6 @@ function App() {
           !isAuthPage
             ? {
                 marginLeft: 240,
-                padding: "24px 24px 24px 0",
                 minHeight: "100vh",
                 background: "#fff",
               }
