@@ -1,6 +1,7 @@
 import { Button } from "@mui/material";
 import { User } from "../models/user";
 import * as NotesApi from "../network/notes_api";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 interface NavBarLoggedInViewProps {
   user: User;
@@ -26,13 +27,20 @@ const NavBarLoggedInView = ({
   }
 
   return (
-    <Button
-      onClick={logout}
-      sx={{ my: 2, color: "white", display: "block" }}
-      className="logoutButton"
-    >
-      Log out
-    </Button>
+    <>
+      <Button
+        onClick={logout}
+        variant="contained"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+        }}
+      >
+        <LogoutIcon />
+        <span>Log out</span>
+      </Button>
+    </>
   );
 };
 
