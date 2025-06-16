@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import LoginPage from "./components/LoginPage";
-import NavBar from "./components/NavBar";
-import SignUpModal from "./components/SignUpModal";
+import LoginPage from "./components/Auth/LoginPage";
+import NavBar from "./components/Navbar/NavBar";
+import SignUpPage from "./components/Auth/SignUpPage";
 import { User } from "./models/user";
 import * as NotesApi from "./network/notes_api";
 import {
@@ -64,8 +64,6 @@ function App() {
       {!isAuthPage && (
         <NavBar
           loggedInUser={loggedInUser}
-          onLogInClicked={() => navigate("/login")}
-          onSignUpClicked={() => navigate("/register")}
           onLogoutSuccessful={() => {
             setLoggedInUser(null);
             localStorage.removeItem("token");
@@ -108,7 +106,7 @@ function App() {
               loggedInUser ? (
                 <Navigate to="/notes" replace />
               ) : (
-                <SignUpModal
+                <SignUpPage
                   onSignUpSuccesful={(user: User, token: string) => {
                     setLoggedInUser(user);
                     localStorage.setItem("token", token);
