@@ -1,13 +1,13 @@
 import { useForm } from "react-hook-form";
-import { User } from "../models/user";
-import { LoginCredentials } from "../network/notes_api";
-import * as NotesApi from "../network/notes_api";
+import { User } from "../../models/user";
+import { LoginCredentials } from "../../network/notes_api";
+import * as NotesApi from "../../network/notes_api";
 import { Alert, Button } from "@mui/material";
-import TextInputField from "./form/TextInputField";
+import TextInputField from "../Form/TextInputField";
 import { useState } from "react";
-import { UnauthorizedError } from "../errors/http_errors";
-import styles from "../styles/LoginPage.module.css";
-import logo from "../logo.svg";
+import { UnauthorizedError } from "../../errors/http_errors";
+import styles from "./LoginAndSignUpPage.module.css";
+import logo from "../../logo.svg";
 
 interface LoginPageProps {
   onLoginSuccessful: (user: User, token: string) => void;

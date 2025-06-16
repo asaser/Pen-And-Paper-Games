@@ -1,4 +1,4 @@
-import NotesPageLoggedInView from "../components/NotesPageLoggedInView";
+import NoteEmptyPage from "../components/NotesPage/NoteEmptyPage";
 import { User } from "../models/user";
 import NotFoundPage from "./NotFoundPage";
 
@@ -7,7 +7,7 @@ interface NotesPageProps {
 }
 
 const NotesPage = ({ loggedInUser }: NotesPageProps) => {
-  return <>{loggedInUser ? <NotesPageLoggedInView /> : <NotFoundPage />}</>;
+  return <>{loggedInUser ? <NoteEmptyPage /> : <NotFoundPage />}</>;
 };
 
 export default NotesPage;

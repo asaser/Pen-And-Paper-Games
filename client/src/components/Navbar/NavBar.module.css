@@ -14,6 +14,10 @@
   box-shadow: 2px 0 8px rgba(0,0,0,0.08);
 }
 
+.fullWidth {
+  width: 100%;
+}
+
 .logoSection {
   display: flex;
   flex-direction: column;
