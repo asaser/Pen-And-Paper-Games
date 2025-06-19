@@ -1,4 +1,4 @@
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import AddEditNoteDialog from "./AddEditNoteDialog";
 import Note from "./Note";
@@ -10,6 +10,7 @@ const NoteEmptyPage = () => {
   const [notesLoading, setNotesLoading] = useState(true);
   const [showNotesLoadingError, setShowNotesLoadingError] = useState(false);
   const [noteToEdit, setNoteToEdit] = useState<NoteModel | null>(null);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
 
   useEffect(() => {
     async function loadNotes() {
@@ -47,9 +48,9 @@ const NoteEmptyPage = () => {
       {notes.map((note) => (
         <Note
           note={note}
-          onNoteClick={setNoteToEdit}
           key={note.id}
           onDeleteNoteClick={deleteNote}
+          onNoteEditClick={() => setNoteToEdit(note)}
         />
       ))}
     </div>
@@ -57,29 +58,38 @@ const NoteEmptyPage = () => {
 
   return (
     <>
+      <Button
+        variant="outlined"
+        onClick={() => setAddDialogOpen(true)}
+        style={{ display: "block", margin: "16px auto" }}
+      >
+        Add Note
+      </Button>
       <AddEditNoteDialog
+        open={addDialogOpen}
+        onClose={() => setAddDialogOpen(false)}
         onNoteSaved={(newNote) => {
           setNotes([...notes, newNote]);
+          setAddDialogOpen(false);
         }}
       />
-
+      <AddEditNoteDialog
+        noteToEdit={noteToEdit ?? undefined}
+        open={!!noteToEdit}
+        onClose={() => setNoteToEdit(null)}
+        onNoteSaved={(updatedNote) => {
+          setNotes(
+            notes.map((existingNote) =>
+              existingNote.id === updatedNote.id ? updatedNote : existingNote
+            )
+          );
+          setNoteToEdit(null);
+        }}
+      />
       {notesLoading && <CircularProgress />}
       {showNotesLoadingError && <p>Something went wrong</p>}
       {!notesLoading && !showNotesLoadingError && (
         <>{notes.length > 0 ? notesGrid : <p>You do not have any notes</p>}</>
-      )}
-      {noteToEdit && (
-        <AddEditNoteDialog
-          noteToEdit={noteToEdit}
-          onNoteSaved={(updatedNote) => {
-            setNotes(
-              notes.map((existingNote) =>
-                existingNote.id === updatedNote.id ? updatedNote : existingNote
-              )
-            );
-            setNoteToEdit(null);
-          }}
-        />
       )}
     </>
   );
