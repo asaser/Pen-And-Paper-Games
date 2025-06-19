@@ -5,7 +5,7 @@ import {
   DialogTitle,
   Grid,
 } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Note } from "../../models/note";
 import { useForm } from "react-hook-form";
 import { NoteInput } from "../../network/notes_api";
@@ -17,14 +17,16 @@ import TextInputField from "../Form/TextInputField";
 interface AddEditNoteDialogProps {
   noteToEdit?: Note;
   onNoteSaved: (note: Note) => void;
+  open: boolean;
+  onClose: () => void;
 }
 
 const AddEditNoteDialog = ({
   noteToEdit,
   onNoteSaved,
+  open,
+  onClose,
 }: AddEditNoteDialogProps) => {
-  const [open, setOpen] = useState(false);
-
   const {
     register,
     handleSubmit,
@@ -59,77 +61,60 @@ const AddEditNoteDialog = ({
       }
 
       onNoteSaved(noteResponse);
+      onClose();
     } catch (error) {
       console.error(error);
       alert(error);
     }
   }
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   return (
-    <>
-      <Button
-        variant="outlined"
-        onClick={handleClickOpen}
-        className={`${styleUtils.blockCenter}`}
-      >
-        {noteToEdit ? "Edit Note" : "Add Note"}
-      </Button>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {noteToEdit ? "Edit note" : "Add note"}
-        </DialogTitle>
-        <DialogContent>
-          <Grid container spacing={2} direction="column">
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <TextInputField
-                name="title"
-                label="Title"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                register={register}
-                registerOptions={{ required: "Required" }}
-                error={errors.title}
-              />
+    <Dialog
+      open={open}
+      onClose={onClose}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">
+        {noteToEdit ? "Edit note" : "Add note"}
+      </DialogTitle>
+      <DialogContent>
+        <Grid container spacing={2} direction="column">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <TextInputField
+              name="title"
+              label="Title"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              register={register}
+              registerOptions={{ required: "Required" }}
+              error={errors.title}
+            />
 
-              <TextInputField
-                name="text"
-                label="Text"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                register={register}
-              />
+            <TextInputField
+              name="text"
+              label="Text"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              register={register}
+            />
 
-              <div>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                  onClick={handleClose}
-                  disabled={isSubmitting}
-                >
-                  Save
-                </Button>
-              </div>
-            </form>
-          </Grid>
-        </DialogContent>
-      </Dialog>
-    </>
+            <div>
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                disabled={isSubmitting}
+              >
+                Save
+              </Button>
+            </div>
+          </form>
+        </Grid>
+      </DialogContent>
+    </Dialog>
   );
 };
 

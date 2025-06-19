@@ -4,14 +4,15 @@ import { Note as NoteModel } from "../../models/note";
 import { formatDate } from "../../utils/formatDate";
 
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 
 interface NoteProps {
   note: NoteModel;
-  onNoteClick: (note: NoteModel) => void;
   onDeleteNoteClick: (note: NoteModel) => void;
+  onNoteEditClick: (note: NoteModel) => void;
 }
 
-const Note = ({ note, onNoteClick, onDeleteNoteClick }: NoteProps) => {
+const Note = ({ note, onDeleteNoteClick, onNoteEditClick }: NoteProps) => {
   const { title, text, createdAt, updatedAt } = note;
 
   let createdUpdatedText: string;
@@ -24,15 +25,23 @@ const Note = ({ note, onNoteClick, onDeleteNoteClick }: NoteProps) => {
   }
 
   return (
-    <Card variant="outlined" onClick={() => onNoteClick(note)}>
+    <Card variant="outlined">
       <CardContent className={`${styles.noteCard}`}>
         <Typography className={`${styles.cardTypography} ${styles.flexCenter}`}>
           {title}
+          <EditIcon
+            onClick={(e) => {
+              onNoteEditClick(note);
+              e.stopPropagation();
+            }}
+            style={{ marginLeft: "auto", cursor: "pointer" }}
+          />
           <DeleteIcon
             onClick={(e) => {
               onDeleteNoteClick(note);
               e.stopPropagation();
             }}
+            style={{ marginLeft: 8, cursor: "pointer" }}
           />
         </Typography>
         <Typography className={styles.cardTypography}>{text}</Typography>
