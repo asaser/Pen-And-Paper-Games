@@ -12,9 +12,17 @@ interface NoteProps {
   note: NoteModel;
   onDeleteNoteClick: (note: NoteModel) => void;
   onNoteEditClick: (note: NoteModel) => void;
+  onNoteClick?: (note: NoteModel) => void;
+  isSelected?: boolean;
 }
 
-const Note = ({ note, onDeleteNoteClick, onNoteEditClick }: NoteProps) => {
+const Note = ({
+  note,
+  onDeleteNoteClick,
+  onNoteEditClick,
+  onNoteClick,
+  isSelected,
+}: NoteProps) => {
   const { title, text, createdAt, updatedAt } = note;
 
   let createdUpdatedText: string;
@@ -30,7 +38,13 @@ const Note = ({ note, onDeleteNoteClick, onNoteEditClick }: NoteProps) => {
 
   return (
     <>
-      <Card variant="outlined">
+      <Card
+        variant="outlined"
+        className={
+          isSelected ? styles.selectedNoteCard : styles.defaultNoteCard
+        }
+        onClick={() => onNoteClick?.(note)}
+      >
         <CardContent className={`${styles.noteCard}`}>
           <Typography
             className={`${styles.cardTypography} ${styles.flexCenter}`}
