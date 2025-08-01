@@ -46,25 +46,36 @@ const Note = ({
         onClick={() => onNoteClick?.(note)}
       >
         <CardContent className={`${styles.noteCard}`}>
-          <Typography
-            className={`${styles.cardTypography} ${styles.flexCenter}`}
-          >
-            {title}
-            <EditIcon
-              onClick={(e) => {
-                onNoteEditClick(note);
-                e.stopPropagation();
+          <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
+            <Typography
+              className={`${styles.cardTypography}`}
+              style={{
+                maxWidth: "70%",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
               }}
-              style={{ marginLeft: "auto", cursor: "pointer" }}
-            />
-            <DeleteIcon
-              onClick={(e) => {
-                setDeleteDialogOpen(true);
-                e.stopPropagation();
-              }}
-              style={{ marginLeft: 8, cursor: "pointer" }}
-            />
-          </Typography>
+              title={title}
+            >
+              {title}
+            </Typography>
+            <div style={{ display: "flex", marginLeft: "auto" }}>
+              <EditIcon
+                onClick={(e) => {
+                  onNoteEditClick(note);
+                  e.stopPropagation();
+                }}
+                style={{ cursor: "pointer" }}
+              />
+              <DeleteIcon
+                onClick={(e) => {
+                  setDeleteDialogOpen(true);
+                  e.stopPropagation();
+                }}
+                style={{ marginLeft: 8, cursor: "pointer" }}
+              />
+            </div>
+          </div>
           <Typography className={styles.cardTypography}>{text}</Typography>
           <Typography className={styles.cardTypography}>
             {createdUpdatedText}
