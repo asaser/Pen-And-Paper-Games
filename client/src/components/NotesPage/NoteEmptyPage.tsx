@@ -124,6 +124,9 @@ const NoteEmptyPage = () => {
             )
           );
           setNoteToEdit(null);
+          if (selectedNote?.id === updatedNote.id) {
+            setSelectedNote(updatedNote);
+          }
         }}
       />
     </div>

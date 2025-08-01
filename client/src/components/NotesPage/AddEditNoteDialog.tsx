@@ -11,7 +11,6 @@ import { useForm } from "react-hook-form";
 import { NoteInput } from "../../network/notes_api";
 import * as NoteApi from "../../network/notes_api";
 
-import styleUtils from "./AddEditNoteDialog.module.css";
 import TextInputField from "../Form/TextInputField";
 
 interface AddEditNoteDialogProps {
