@@ -15,6 +15,7 @@ const pages = [
   { name: "Notes", path: "/notes" },
   { name: "Universum", path: "/universum" },
   { name: "Character", path: "/character" },
+  { name: "Dices", path: "/dices" },
 ];
 
 const NavBar = ({ loggedInUser, onLogoutSuccessful }: NavBarProps) => {
