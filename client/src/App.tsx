@@ -16,6 +16,7 @@ import PrivacyPage from "./pages/PrivacyPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import UniversumPage from "./pages/UniversumPage";
 import CharacterPage from "./pages/CharacterPage";
+import DicesPage from "./pages/DicesPage";
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
@@ -124,6 +125,7 @@ function App() {
           />
           <Route path="/universum" element={<UniversumPage />} />
           <Route path="/character" element={<CharacterPage />} />
+          <Route path="/dices" element={<DicesPage />} />
           <Route path="/*" element={<NotFoundPage />} />
         </Routes>
       </div>
