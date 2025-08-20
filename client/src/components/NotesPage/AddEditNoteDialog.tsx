@@ -3,7 +3,8 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  Grid,
+  DialogActions,
+  Box,
 } from "@mui/material";
 import { useEffect } from "react";
 import { Note } from "../../models/note";
@@ -73,46 +74,78 @@ const AddEditNoteDialog = ({
       onClose={onClose}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        sx: {
+          minWidth: "500px",
+          minHeight: "400px",
+        },
+      }}
     >
-      <DialogTitle id="alert-dialog-title">
+      <DialogTitle
+        id="alert-dialog-title"
+        sx={{
+          fontSize: "1.5rem",
+          fontWeight: "bold",
+          padding: "24px 24px 16px 24px",
+        }}
+      >
         {noteToEdit ? "Edit note" : "Add note"}
       </DialogTitle>
-      <DialogContent>
-        <Grid container spacing={2} direction="column">
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <TextInputField
-              name="title"
-              label="Title"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              register={register}
-              registerOptions={{ required: "Required" }}
-              error={errors.title}
-            />
+      <DialogContent sx={{ padding: "16px 24px" }}>
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
+          <TextInputField
+            name="title"
+            label="Title"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            register={register}
+            registerOptions={{ required: "Required" }}
+            error={errors.title}
+            sx={{
+              mb: 3,
+              "& .MuiInputBase-root": {
+                minHeight: "56px",
+                fontSize: "1.1rem",
+              },
+            }}
+          />
 
-            <TextInputField
-              name="text"
-              label="Text"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              register={register}
-            />
-
-            <div>
-              <Button
-                variant="contained"
-                color="primary"
-                type="submit"
-                disabled={isSubmitting}
-              >
-                Save
-              </Button>
-            </div>
-          </form>
-        </Grid>
+          <TextInputField
+            name="text"
+            label="Text"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            multiline
+            minRows={6}
+            maxRows={12}
+            register={register}
+          />
+        </Box>
       </DialogContent>
+      <DialogActions sx={{ padding: "16px 24px 24px 24px", gap: 2 }}>
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={onClose}
+          sx={{ minWidth: "100px" }}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          type="submit"
+          disabled={isSubmitting}
+          onClick={handleSubmit(onSubmit)}
+          sx={{ minWidth: "100px" }}
+        >
+          {isSubmitting ? "Saving..." : "Save"}
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };
